@@ -1,0 +1,42 @@
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: demo-app
+    namespace: default
+  spec:
+    replicas: 2
+    selector:
+      matchLabels:
+        app: demo-app
+    template:
+      metadata:
+        labels:
+          app: demo-app
+      spec:
+        containers:
+        - name: demo-app
+          image: demo-app:build-14
+          ports:
+          - containerPort: 5000
+          env:
+          - name: APP_VERSION
+            value: "build-14"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
